@@ -13,34 +13,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  const ifParamsPresentElse = (container) => {
+  const ifParamsPresentElse = () => {
     if (window.location.search) { // with filter/s selected
-      getValuesFromStorage(container);
+      getValuesFromStorage(mangaContainer);
     } else { // initialization, with no filters selected
-      getLatest(container);
+      getLatest(mangaContainer);
     }
   }
 
-  const onClickGenreCheckbox = (inputs) => {
-    for (let i = 1; i < inputs.length; i++) {
-      inputs[i].onclick = () => {
-        inputs[0].checked = false;
+  const onClickGenreCheckbox = () => {
+    for (let i = 1; i < checkboxes.length; i++) {
+      checkboxes[i].onclick = () => {
+        checkboxes[0].checked = false;
       }
     }
   }
 
-  const onClickAllCheckbox = (inputs) => {
-    inputs[0].onclick = () => {
-      for (let i = 1; i < inputs.length; i++) {
-        inputs[i].checked = false;
+  const onClickAllCheckbox = () => {
+    checkboxes[0].onclick = () => {
+      for (let i = 1; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
       }
     }
   }
 
   userIsSignedIn();
-  ifParamsPresentElse(mangaContainer);
-  onClickAllCheckbox(checkboxes); // when 'All' is clicked, uncheck everything else
-  onClickGenreCheckbox(checkboxes); // when other genres are clicked, uncheck 'All'
+  ifParamsPresentElse();
+  onClickAllCheckbox(); // when 'All' is clicked, uncheck everything else
+  onClickGenreCheckbox(); // when other genres are clicked, uncheck 'All'
 
   filterForm.onsubmit = (e) => {
     e.preventDefault();
@@ -82,6 +82,7 @@ const fetchMangaAPI = async (state = 'all', category = 'all') => {
 const generateMangaItem = (container, mLink, mImg, mTitle, mLatestLink, mLatestName, mDesc) => {
   if (mTitle.length > 83) mTitle = mTitle.slice(0, 83) + '...';
   if (mDesc.length > 150) mDesc = mDesc.slice(0, 150) + '...';
+  if (mLatestName.length > 44) mLatestName = mLatestName.slice(0, 44) + '...';
 
   const divContainer = createDivEl('d-flex manga-item');
   const aImg = createAEl(null, mLink);

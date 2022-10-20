@@ -84,6 +84,7 @@ const fetchMangaAPI = async (type = 'topview', state = 'all', category = 'all') 
 const generateMangaItem = (container, mLink, mImg, mTitle, mLatestLink, mLatestName, mDesc) => {
   if (mTitle.length > 83) mTitle = mTitle.slice(0, 83) + '...';
   if (mDesc.length > 150) mDesc = mDesc.slice(0, 150) + '...';
+  if (mLatestName.length > 44) mLatestName = mLatestName.slice(0, 44) + '...';
 
   const divContainer = createDivEl('d-flex manga-item');
   const aImg = createAEl(null, mLink);

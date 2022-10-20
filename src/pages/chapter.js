@@ -34,9 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const onClickPrevNextBtns = (prevOrNext) => {
-    const currChapter = parseInt(chapterId.slice(chapterId.lastIndexOf('_') + 1));
+    const currChapter = parseInt(chapterId.slice(chapterId.lastIndexOf('chapter') + 8));
     const btnChapter = prevOrNext === 'prev' ? currChapter - 1 : currChapter + 1;
-    chapterId = chapterId.slice(0, chapterId.lastIndexOf('_') + 1) + btnChapter.toString();
+    chapterId = chapterId.slice(0, chapterId.lastIndexOf('chapter') + 8) + btnChapter.toString();
     chapterLink = `https://manga-scraper-for-mangakakalot-website.p.rapidapi.com/chapter?id=${chapterId}`;
     getChapterImgs(chapterLink);
     changeUrlParams('chapterId', chapterId);
