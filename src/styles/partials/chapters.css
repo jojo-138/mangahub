@@ -1,0 +1,51 @@
+#chapter-container {
+  background-color: #3b3b3b;
+  color: #ffffff;
+}
+
+#title {
+  text-align: center;
+}
+
+.chapter-nav {
+  justify-content: center;
+  gap: 1rem;
+  height: 2rem;
+  margin-block: 0.5rem;
+}
+
+.dropdown {
+  width: 30rem;
+}
+
+.chapter-list, .prev, .next {
+  border: 1px solid #167990;
+  border-radius: 5px;
+  background-color: #3b3b3b;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color .4s ease-out;
+}
+
+.chapter-list {
+  padding-inline: 0.3rem;
+}
+
+.chapter-list option {
+  background-color: inherit;
+  margin: 0.3rem;
+}
+
+.prev, .next {
+  width: 10rem;
+  padding-inline: 0.5rem;
+}
+
+.chapter-list:hover, .prev:hover, .next:hover {
+  background-color: #2c2c2c;
+}
+
+#chapter-imgs {
+  margin: 1rem auto;
+  max-width: 940px;
+}

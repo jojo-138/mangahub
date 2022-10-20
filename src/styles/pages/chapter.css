@@ -1,0 +1,5 @@
+@import '../global.css';
+@import '../partials/navbar.css';
+@import '../partials/chapters.css';
+@import '../partials/footer.css';
+@import '../media_queries.css';

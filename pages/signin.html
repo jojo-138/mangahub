@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/mangahub/src/styles/pages/signin_register.css">
+  <link rel="icon" href="/mangahub/img/mh_logo.png">
+  <title>MangaHub | Sign In</title>
+</head>
+<body>
+  <nav>
+    <div class="page-container d-flex" id="navbar">
+      <a href="/mangahub/">
+        <img src="/mangahub/img/mangahub_logo.png" alt="MangaHub Logo">
+      </a>
+      <div class="d-flex">
+        <a href="/mangahub/" class="navlink">Home</a>
+        <a href="/mangahub/pages/latest.html" class="navlink">Latest</a>
+        <a href="/mangahub/pages/browse.html" class="navlink">Browse</a>
+        <a href="/mangahub/pages/search.html" class="navlink">Search</a>
+      </div>
+      <form id="nav-form" action="/mangahub/pages/search.html">
+        <input type="text" class="h-100" id="nav-search" name="searched" placeholder="Search MangaHub">
+        <button type="submit" class="h-100">
+          <img src="/mangahub/img/search.png" alt="Submit">
+        </button>
+      </form>
+      <div id="nav-signin-register-link">
+        <a href="/mangahub/pages/signin.html" class="navlink active">Sign In</a>
+        <a href="/mangahub/pages/register.html" class="navlink">Register</a>
+      </div>
+    </div>
+  </nav>
+  <main class="page-container w-100">
+    <fieldset>
+      <legend>Sign In</legend>
+      <form id="signin" class="d-flex signin-register">
+        <div>
+          <label for="username"><b>Username:</b></label>
+          <input type="text" id="username" name="username" minlength="8">
+        </div>
+        <div>
+          <label for="password"><b>Password:</b></label>
+          <input type="password" id="password" name="password" minlength="8">
+        </div>
+        <div id="error-msg" class="hidden"></div>
+        <input type="submit" id="signin-register-submit" value="Sign In">
+      </form>
+    </fieldset>
+  </main>
+  <footer>
+    <div class="page-container d-grid" id="footer">
+      <div id="desc">
+        <h3>MangaHub</h3>
+        <p>
+          A place to read manga to your heart's content. For free.
+        </p>
+        <p>&copy; 2022 | All Rights Reserved</p>
+      </div>
+      <div id="contact">
+        <h3>Contact Us</h3>
+        <a href="#!" class="footer-link">mangahub@gmail.com</a>
+        <p>123-456-7890</p>
+        <p>1234 John Blvd. LA</p>
+      </div>
+      <div id="socials">
+        <h3>Socials</h3>
+        <a href="#!" class="footer-link">Facebook</a><br>
+        <a href="#!" class="footer-link">Twitter</a><br>
+        <a href="#!" class="footer-link">Instagram</a><br>
+      </div>
+    </div>
+  </footer>
+  <script type="text/javascript" src="/mangahub/src/pages/signin.js"></script>
+</body>
+</html>

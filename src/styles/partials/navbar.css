@@ -1,0 +1,55 @@
+nav {
+  background-color: #167990;
+  font-size: 0.8rem;
+}
+
+#navbar {
+  align-items: center;
+}
+
+.navlink {
+  color: #a8ebf8;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0.7rem;
+  transition: background-color .4s ease-out;
+}
+
+.navlink:hover {
+  background-color: #0e5464;
+}
+
+#nav-form {
+  margin-inline: auto;
+  position: relative;
+  height: 40px;
+}
+
+#nav-search {
+  padding-left: 0.5rem;
+  padding-right: 2.8rem;
+  width: 250px;
+  border: 3px solid #0f4f5e;
+  background-color: #167990;
+  color: #a8ebf8;
+}
+
+#nav-search::placeholder {
+  color: #a8ebf8;
+}
+
+#nav-form button {
+  border: 7px solid #0f4f5e;
+  background-color: #0f4f5e;
+  color: #a8ebf8;
+  position: absolute;
+  right: 0;
+}
+
+#nav-icons, #nav-signin-register-link {
+  margin-left: auto;
+}
+
+.nav-icon {
+  margin-left: 0.7rem;
+}

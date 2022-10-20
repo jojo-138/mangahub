@@ -1,0 +1,33 @@
+@import '../global.css';
+@import '../partials/navbar.css';
+@import '../partials/footer.css';
+@import '../media_queries.css';
+
+.signin-register {
+  flex-direction: column;
+  gap: 1rem;
+  margin-inline: 1.5rem;
+  text-align: center;
+}
+
+#fname, #username, #password {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #adadad;
+}
+
+#signin-register-submit {
+  max-width: 5rem;
+  margin-inline: auto;
+  background-color: #167990;
+  color: #ffffff;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 2px 5px #c0c0c0;
+  transition: background-color .4s ease-out;
+}
+
+#signin-register-submit:hover {
+  background-color: #0e5464;
+}

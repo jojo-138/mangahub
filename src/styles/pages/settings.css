@@ -1,0 +1,55 @@
+@import '../global.css';
+@import '../partials/navbar.css';
+@import '../partials/footer.css';
+@import '../media_queries.css';
+
+.update-form label {
+  font-weight: 600;
+}
+
+.info-container, .update-form {
+  gap: 1rem;
+  align-items: center;
+}
+
+.update-user {
+  margin-left: auto;
+  padding: 0.3rem;
+  font-size: 0.8rem;
+  color: #167990;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.update-user:hover {
+  text-decoration: underline;
+}
+
+.update-form input, .save-user {
+  padding: 0.3rem;
+  border: 1px solid #747474;
+  border-radius: 5px;
+}
+
+.save-user {
+  background-color: #167990;
+  color: white;
+  margin-left: auto;
+}
+
+#success, #error {
+  margin-inline: auto;
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 10px;
+}
+
+#success {
+  max-width: 160px;
+  background-color: #b1ffc8a4;
+}
+
+#error {
+  max-width: 220px;
+  background-color: #ff97978e;
+}

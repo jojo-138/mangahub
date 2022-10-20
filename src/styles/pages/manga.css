@@ -1,0 +1,13 @@
+@import '../global.css';
+@import '../partials/navbar.css';
+@import '../partials/manga_detail.css';
+@import '../partials/footer.css';
+@import '../media_queries.css';
+
+#manga-error {
+  text-align: center;
+}
+
+#error-msg{
+  text-align: center;
+}

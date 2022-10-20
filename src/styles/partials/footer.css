@@ -1,0 +1,18 @@
+footer {
+  background-color: #167990;
+}
+
+#footer {
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 2rem;
+  padding-block: 1.5rem;
+  color: #00313b;
+}
+
+.footer-link {
+  color: #a8ebf8;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}

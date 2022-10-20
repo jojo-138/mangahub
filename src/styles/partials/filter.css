@@ -1,0 +1,40 @@
+#filter {
+  margin-block: 0.7rem;
+  padding: 0.5rem;
+  background-color: #a8ebf869;
+  cursor: pointer;
+}
+
+#filter-form {
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-inline: 1.5rem;
+  font-size: 0.9rem;
+}
+
+#genre-container {
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  margin-left: 2rem;
+}
+
+.smaller-font {
+  font-size: 0.7rem;
+}
+
+#completion-container, #sort-container {
+  gap: 1rem;
+  margin-left: 2rem;
+}
+
+#filter-form button {
+  background-color: #167990;
+  border: none;
+  border-radius: 5px;
+  padding: 0.6rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  margin-left: auto;
+  box-shadow: 0 3px 5px #c0c0c0;
+}
