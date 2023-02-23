@@ -1,129 +1,144 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const query = window.location.search;
-  const mangaId = query.slice(query.indexOf('=') + 1, query.indexOf('&')).replace('%2F', '/');
-  let chapterId = query.slice(query.indexOf('=', 9) + 1).replace('%2F', '/');
-  const mangaLink = `https://manga-scraper-for-mangakakalot-website.p.rapidapi.com/details?id=${mangaId}`;
-  let chapterLink = `https://manga-scraper-for-mangakakalot-website.p.rapidapi.com/chapter?id=${chapterId}`;
-  const dropdowns = document.getElementsByClassName('chapter-list');
-  const chapterImgs = document.getElementById('chapter-imgs');
-  const prevBtns = document.getElementsByClassName('prev');
-  const nextBtns = document.getElementsByClassName('next');
-  const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
-  const navIcons = document.getElementById('nav-icons');
+	const dropdowns = document.getElementsByClassName('chapter-list');
+	const chapterImgs = document.getElementById('chapter-imgs');
+	const prevBtns = document.getElementsByClassName('prev');
+	const nextBtns = document.getElementsByClassName('next');
+	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
+	const navIcons = document.getElementById('nav-icons');
+	const query = window.location.search;
+	const mangaId = query.substring(query.indexOf('mangaid=') + 10, query.indexOf('&'));
+	let chapterId = query.substring(query.indexOf('chapterId=') + 10, query.indexOf('&provider'));
+	const provider = query.substring(query.indexOf('provider=') + 9);
+	const mangaLink = `https://manga-scrapper.p.rapidapi.com/series/${mangaId}/chapters/?provider=${provider}`;
+	let chapterLink = `https://manga-scrapper.p.rapidapi.com/series/${mangaId}/chapter/${chapterId}/?provider=${provider}`;
 
-  const userIsSignedIn = async() => {
-    const data = await fetchIsSignedIn();
-    if (data.status === 'success') {
-      navSigninRegisterLink.classList.toggle('hidden');
-      navIcons.classList.toggle('hidden');
-    }
-  }
+	const userIsSignedIn = async () => {
+		const data = await fetchIsSignedIn();
+		if (data.status === 'success') {
+			navSigninRegisterLink.classList.toggle('hidden');
+			navIcons.classList.toggle('hidden');
+		}
+	};
 
-  const getChapters = async () => {
-    const data = await fetchMangaAPI(mangaLink);
-    const title = document.getElementById('title');
-    title.textContent = data.title;
-    document.title = `MangaHub | ${data.title}`;
-    generateChapterList(dropdowns, data.chapters, chapterId);
-  }
+	const getChapters = async () => {
+		let chapters = await fetchMangaAPI(mangaLink);
+		const title = document.getElementById('title');
+		const formatTitle = mangaId
+			.replaceAll('-', ' ')
+			.split(' ')
+			.map((word) => word[0].toUpperCase() + word.substring(1))
+			.join(' ');
+		title.textContent = formatTitle;
+		document.title = `MangaHub | ${formatTitle}`;
+		chapters.series.sort((a, b) => a.ChapterOrder - b.ChapterOrder);
+		generateChapterList(dropdowns, chapters.series, chapterId);
+	};
 
-  const getChapterImgs = async (link) => {
-    const data = await fetchMangaAPI(link);
-    emptyParent(chapterImgs);
-    data.forEach((img, i) => generateChapterImgs(img, i, chapterImgs));
-  }
+	const getChapterImgs = async (link) => {
+		const data = await fetchMangaAPI(link);
+		emptyParent(chapterImgs);
+		data.ChapterContent.forEach((img, i) => generateChapterImgs(img, i, chapterImgs));
+		Array.from(prevBtns).forEach(
+			(btn) =>
+				(btn.onclick = !data.ChapterPrevSlug
+					? null
+					: () => onClickPrevNextBtns(data.ChapterPrevSlug))
+		);
+		Array.from(nextBtns).forEach(
+			(btn) =>
+				(btn.onclick = !data.ChapterNextSlug
+					? null
+					: () => onClickPrevNextBtns(data.ChapterNextSlug))
+		);
+	};
 
-  const onClickPrevNextBtns = (prevOrNext) => {
-    const currChapter = parseInt(chapterId.slice(chapterId.lastIndexOf('chapter') + 8));
-    const btnChapter = prevOrNext === 'prev' ? currChapter - 1 : currChapter + 1;
-    chapterId = chapterId.slice(0, chapterId.lastIndexOf('chapter') + 8) + btnChapter.toString();
-    chapterLink = `https://manga-scraper-for-mangakakalot-website.p.rapidapi.com/chapter?id=${chapterId}`;
-    getChapterImgs(chapterLink);
-    changeUrlParams('chapterId', chapterId);
-    selectCurrChapter(chapterId);
-  }
+	const onClickPrevNextBtns = (id) => {
+		chapterLink = `https://manga-scrapper.p.rapidapi.com/series/${mangaId}/chapter/${id}/?provider=${provider}`;
+		getChapterImgs(chapterLink);
+		changeUrlParams('chapterId', id);
+		selectCurrChapter(id);
+	};
 
-  const selectCurrChapter = (chapterId) => Array.from(dropdowns).forEach(dropdown => dropdown.value = chapterId);
+	const selectCurrChapter = (chapterId) =>
+		Array.from(dropdowns).forEach((dropdown) => (dropdown.value = chapterId));
 
-  userIsSignedIn();
-  getChapters();
-  getChapterImgs(chapterLink);
-  Array.from(prevBtns).forEach(btn => btn.onclick = () => onClickPrevNextBtns('prev'));
-  Array.from(nextBtns).forEach(btn => btn.onclick = () => onClickPrevNextBtns('next'));
-  Array.from(dropdowns).forEach(dropdown => {
-    dropdown.onchange = () => {
-      const selected = dropdown.value;
-      chapterId = selected;
-      chapterLink = `https://manga-scraper-for-mangakakalot-website.p.rapidapi.com/chapter?id=${chapterId}`;
-      getChapterImgs(chapterLink);
-      changeUrlParams('chapterId', selected);
-      selectCurrChapter(chapterId);
-    };
-  });
-})
+	userIsSignedIn();
+	getChapters();
+	getChapterImgs(chapterLink);
+	Array.from(dropdowns).forEach((dropdown) => {
+		dropdown.onchange = () => {
+			const selected = dropdown.value;
+			chapterId = selected;
+			chapterLink = `https://manga-scrapper.p.rapidapi.com/series/${mangaId}/chapter/${chapterId}/?provider=${provider}`;
+			getChapterImgs(chapterLink);
+			changeUrlParams('chapterId', selected);
+			selectCurrChapter(chapterId);
+		};
+	});
+});
 
 // helpers
-const fetchIsSignedIn = async() => {
-  const options = {
-    method: 'GET',
-    credentials: 'include',
-  };
-  const res = await fetch('https://mangahub-server.herokuapp.com/is-signed-in', options);
-  const data = await res.json();
-  return data;
-}
+const fetchIsSignedIn = async () => {
+	const options = {
+		method: 'GET',
+		credentials: 'include',
+	};
+	const res = await fetch('https://mangahub-server.herokuapp.com/is-signed-in', options);
+	const data = await res.json();
+	return data;
+};
 
 const fetchMangaAPI = async (link) => {
-  const options = {
-    method: 'GET',
-    headers: {
-      'X-RapidAPI-Key': '53070c96a9msh916468f548d07ccp1710ddjsn59db916479d6',
-      'X-RapidAPI-Host': 'manga-scraper-for-mangakakalot-website.p.rapidapi.com'
-    }
-  };
-  const res = await fetch(link, options);
-  const data = await res.json();
-  return data.data;
-}
+	const options = {
+		method: 'GET',
+		headers: {
+			'X-RapidAPI-Key': '53070c96a9msh916468f548d07ccp1710ddjsn59db916479d6',
+			'X-RapidAPI-Host': 'manga-scrapper.p.rapidapi.com',
+		},
+	};
+	const res = await fetch(link, options);
+	const data = await res.json();
+	return data.data;
+};
 
 const generateChapterList = (dropdowns, mChapters, chapterId) => {
-  Array.from(dropdowns).forEach(dropdown => {
-    mChapters.forEach(item => {
-      const opt = document.createElement('option');
-      opt.value = item.id;
-      opt.append(item.title);
-      dropdown.appendChild(opt);
-    })
-    dropdown.value = chapterId;
-  })
-}
+	Array.from(dropdowns).forEach((dropdown) => {
+		mChapters.forEach((item) => {
+			const opt = document.createElement('option');
+			opt.value = item._id;
+			opt.append(item.ChapterTitle);
+			dropdown.appendChild(opt);
+		});
+		dropdown.value = chapterId;
+	});
+};
 
 const generateChapterImgs = (cImg, page, container) => {
-  const img = createImgEl('w-100', cImg, `page ${page}`);
-  container.appendChild(img);
-}
+	const img = createImgEl('w-100', cImg, `page ${page}`);
+	container.appendChild(img);
+};
 
 // utils
 const createEl = (el) => document.createElement(el);
 
 const createImgEl = (className, src, alt) => {
-  const img = createEl('img');
-  img.className = className;
-  img.src = src;
-  img.alt = alt;
-  return img;
-}
+	const img = createEl('img');
+	img.className = className;
+	img.src = src;
+	img.alt = alt;
+	return img;
+};
 
 const changeUrlParams = (key, value) => {
-  const queryParams = new URLSearchParams(window.location.search);
-  queryParams.set(key, value);
-  history.pushState(null, null, "?" + queryParams.toString());
-}
+	const queryParams = new URLSearchParams(window.location.search);
+	queryParams.set(key, value);
+	history.pushState(null, null, '?' + queryParams.toString());
+};
 
 const emptyParent = (parent) => {
-  let firstChild = parent.firstElementChild;
-  while (firstChild) {
-    parent.removeChild(firstChild);
-    firstChild = parent.firstElementChild;
-  }
-}
+	let firstChild = parent.firstElementChild;
+	while (firstChild) {
+		parent.removeChild(firstChild);
+		firstChild = parent.firstElementChild;
+	}
+};

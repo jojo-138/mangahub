@@ -1,196 +1,190 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const mangaErrorMsg = document.getElementById('manga-error');
-  const mangaPg = document.getElementById('manga-pg');
-  const chapterTbl = document.getElementById('chapter-table');
-  const follow = document.getElementById('follow');
-  const following = document.getElementById('following');
-  const query = window.location.search;
-  const mangaId = query.slice(query.indexOf('=') + 1).replace('%2F', '/');
-  const errorMsg = document.getElementById('error-msg');
-  const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
-  const navIcons = document.getElementById('nav-icons');
-  let mangaError;
+	const mangaErrorMsg = document.getElementById('manga-error');
+	const mangaPg = document.getElementById('manga-pg');
+	const chapterTbl = document.getElementById('chapter-table');
+	const follow = document.getElementById('follow');
+	const following = document.getElementById('following');
+	const errorMsg = document.getElementById('error-msg');
+	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
+	const navIcons = document.getElementById('nav-icons');
+	const query = window.location.search;
+	const mangaId = query.slice(query.indexOf('id=') + 3, query.indexOf('&'));
+	const provider = query.slice(query.indexOf('provider=') + 9);
+	let mangaError;
 
-  const userIsSignedIn = async() => {
-    const data = await fetchIsSignedIn();
-    if (data.status === 'success') {
-      navSigninRegisterLink.classList.toggle('hidden');
-      navIcons.classList.toggle('hidden');
-    }
-  }
+	const userIsSignedIn = async () => {
+		const data = await fetchIsSignedIn();
+		if (data.status === 'success') {
+			navSigninRegisterLink.classList.toggle('hidden');
+			navIcons.classList.toggle('hidden');
+		}
+	};
 
-  const getManga = async () => {
-    const data = await fetchMangaAPI(mangaId);
-    if (data === null) {
-      mangaError = true;
-      mangaErrorMsg.classList.remove('hidden');
-      mangaPg.classList.add('hidden');
-      return;
-    }
-    generateMangaDetails(data.title, data.alternative_titles, data.thumbnail_url, data.authors, data.genres, data.status, data.views_count, data.description);
-    data.chapters.forEach(item => generateChapterList(chapterTbl, chapterUrl(mangaId, item.id), item.title, item.views_count, item.uploaded_at));
-    document.title = `MangaHub | ${data.title}`;
-  }
+	const getManga = async () => {
+		const manga = await fetchMangaAPI('manga', mangaId, provider);
+		const chapters = await fetchMangaAPI('chapters', mangaId, provider);
 
-  const getIsFollowing = async () => {
-    const data = await fetchIsFollowing(mangaId);
-    data.following && isFollowing(); // or status code is 200
-  }
+		document.title = `MangaHub | ${manga.MangaTitle ?? 'Error'}`;
 
-  //onClick of follow and and following
-  const followManga = async () => {
-    const data = await fetchFollowManga(mangaId);
-    if (data.status === 'success') return isFollowing();
-    if (data.msg === 'Unauthorized') return window.location.href = "https://jojo-138.github.io/mangahub/pages/signin.html";
-    errorMsg.textContent = data.msg;
-    toggleMsg(errorMsg, 5000);
-  }
+		if (!manga) {
+			mangaError = true;
+			mangaErrorMsg.classList.remove('hidden');
+			mangaPg.classList.add('hidden');
+		} else {
+			generateMangaDetails(manga.MangaTitle, manga.MangaCover, manga.MangaSynopsis);
+			chapters.sort((a, b) => a.ChapterOrder - b.ChapterOrder);
+			chapters.forEach((chapter) =>
+				generateChapterList(
+					chapterTbl,
+					chapterUrl(mangaId, chapter._id, provider),
+					chapter.ChapterNumber,
+					chapter.ChapterTitle,
+					chapter.ChapterDate
+				)
+			);
+		}
+	};
 
-  const unfollowManga = async () => {
-    const data = await fetchUnfollowManga(mangaId);
-    if (data.status === 'success') return isFollowing();
-    if (data.msg === 'Unauthorized') return window.location.href = "https://jojo-138.github.io/mangahub/pages/signin.html";
-    errorMsg.textContent = data.msg;
-    toggleMsg(errorMsg, 5000);
-  }
+	const getIsFollowing = async () => {
+		const data = await fetchIsFollowing(mangaId, provider);
+		data.following && isFollowing();
+	};
 
-  const isFollowing = () => {
-    follow.classList.toggle('hidden');
-    following.classList.toggle('hidden');
-  }
+	const followUnfollowManga = async (action) => {
+		fetchFollowUnfollow;
+		const data = await fetchFollowUnfollow(action, mangaId, provider);
+		if (data.status === 'success') return isFollowing();
+		if (data.msg === 'Unauthorized')
+			return (window.location.href = 'https://jojo-138.github.io/mangahub/pages/signin.html');
+		errorMsg.textContent = data.msg;
+		toggleMsg(errorMsg, 5000);
+	};
 
-  userIsSignedIn();
-  getManga();
-  if (!mangaError) {
-    getIsFollowing();
-    follow.onclick = () => followManga();
-    following.onclick = () => unfollowManga();
-  }
-})
+	const isFollowing = () => {
+		follow.classList.toggle('hidden');
+		following.classList.toggle('hidden');
+	};
+
+	userIsSignedIn();
+	getManga();
+	if (!mangaError) {
+		getIsFollowing();
+		follow.onclick = () => followUnfollowManga('follow');
+		following.onclick = () => followUnfollowManga('unfollow');
+	}
+});
 
 // helpers
-const fetchIsSignedIn = async() => {
-  const options = {
-    method: 'GET',
-    credentials: 'include',
-  };
-  const res = await fetch('https://mangahub-server.herokuapp.com/is-signed-in', options);
-  const data = await res.json();
-  return data;
-}
+const fetchIsSignedIn = async () => {
+	const options = {
+		method: 'GET',
+		credentials: 'include',
+	};
+	const res = await fetch('https://mangahub-server.herokuapp.com/is-signed-in', options);
+	const data = await res.json();
+	return data;
+};
 
-const fetchIsFollowing = async (mangaId) => {
-  const options = {
-    method: 'GET',
-    credentials: 'include',
-  };
-  const res = await fetch(`https://mangahub-server.herokuapp.com/following?mangaId=${mangaId}`, options);
-  const data = await res.json();
-  return data;
-}
+const fetchIsFollowing = async (mangaId, group) => {
+	const options = {
+		method: 'GET',
+		credentials: 'include',
+	};
+	const res = await fetch(
+		`https://mangahub-server.herokuapp.com/following?mangaId=${mangaId}&provider=${group}`,
+		options
+	);
+	const data = await res.json();
+	return data;
+};
 
-const fetchFollowManga = async (mangaId) => {
-  const options = {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mangaId })
-  };
-  const res = await fetch('https://mangahub-server.herokuapp.com/follow', options);
-  const data = await res.json();
-  return data;
-}
+const fetchFollowUnfollow = async (action, mangaId, group) => {
+	const options = {
+		method: action === 'follow' ? 'POST' : 'DELETE',
+		credentials: 'include',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ mangaId, group }),
+	};
+	const res = await fetch(`https://mangahub-server.herokuapp.com/${action}`, options);
+	const data = await res.json();
+	return data;
+};
 
-const fetchUnfollowManga = async (mangaId) => {
-  const options = {
-    method: 'DELETE',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mangaId })
-  };
-  const res = await fetch('https://mangahub-server.herokuapp.com/unfollow', options);
-  const data = await res.json();
-  return data;
-}
+const fetchMangaAPI = async (fetchFor, id, group) => {
+	const options = {
+		method: 'GET',
+		headers: {
+			'X-RapidAPI-Key': '53070c96a9msh916468f548d07ccp1710ddjsn59db916479d6',
+			'X-RapidAPI-Host': 'manga-scrapper.p.rapidapi.com',
+		},
+	};
+	const res = await fetch(
+		fetchFor === 'manga'
+			? `https://manga-scrapper.p.rapidapi.com/series/${id}/?provider=${group}`
+			: `https://manga-scrapper.p.rapidapi.com/series/${id}/chapters/?provider=${group}`,
+		options
+	);
+	const data = await res.json();
+	return fetchFor === 'manga' ? data.data : data.data.series;
+};
 
-const fetchMangaAPI = async (id) => {
-  const options = {
-    method: 'GET',
-    headers: {
-      'X-RapidAPI-Key': '53070c96a9msh916468f548d07ccp1710ddjsn59db916479d6',
-      'X-RapidAPI-Host': 'manga-scraper-for-mangakakalot-website.p.rapidapi.com'
-    }
-  };
-  const res = await fetch(`https://manga-scraper-for-mangakakalot-website.p.rapidapi.com/details?id=${id}`, options);
-  const data = await res.json();
-  return data.data;
-}
+const generateMangaDetails = (mTitle, mImg, mSummary) => {
+	const title = document.getElementById('manga-title');
+	const img = document.getElementById('manga-img');
+	const summary = document.getElementById('summary');
 
-const generateMangaDetails = (mTitle, mAltTitles, mImg, mAuthor, mGenres, mStatus, mViews, mSummary) => {
-  const title = document.getElementById('manga-title');
-  const altTitles = document.getElementById('alt-titles');
-  const img = document.getElementById('manga-img');
-  const author = document.getElementById('author');
-  const genres = document.getElementById('genres');
-  const status = document.getElementById('status');
-  const views = document.getElementById('views');
-  const summary = document.getElementById('summary');
+	title.textContent = mTitle;
+	img.src = mImg;
+	img.alt = mTitle;
+	summary.textContent = mSummary.replaceAll('<br>', '');
+};
 
-  title.textContent = mTitle;
-  altTitles.textContent = mAltTitles.join(', ');
-  img.src = mImg;
-  author.textContent = mAuthor.join(', ');
-  genres.textContent = mGenres.join(', ');
-  status.textContent = mStatus;
-  views.textContent = mViews;
-  summary.textContent = mSummary;
-}
+const generateChapterList = (container, cLink, cNum, cTitle, cUpdated) => {
+	const a = createAEl('d-flex chapter', cLink);
+	const divTitle = createDivEl('chapter-title');
+	const divUpdated = createDivEl('updated grey-text');
 
-const generateChapterList = (container, cLink, cTitle, cViews, cUpdated) => {
-  const a = createAEl('d-flex chapter', cLink);
-  const divTitle = createDivEl('chapter-title');
-  const divUpdated = createDivEl('updated grey-text');
+	divTitle.append(`${cNum}: ${cTitle}`);
+	divUpdated.append(cUpdated);
+	a.append(divTitle, divUpdated);
+	container.appendChild(a);
+};
 
-  divTitle.append(cTitle);
-  divUpdated.append(`${cViews} | ${cUpdated}`);
-  a.append(divTitle, divUpdated);
-  container.appendChild(a);
-}
-
-const chapterUrl = (mangaId, chapterId) => `/mangahub/pages/chapter.html?mangaId=${encodeURIComponent(mangaId)}&chapterId=${encodeURIComponent(chapterId)}`;
+const chapterUrl = (mangaId, chapterId, group) =>
+	`/mangahub/pages/chapter.html?mangaId=${mangaId}&chapterId=${chapterId}&provider=${group}`;
 
 // utils
 const createEl = (el) => document.createElement(el);
 
 const createDivEl = (className) => {
-  const div = createEl('div');
-  div.className = className;
-  return div;
-}
+	const div = createEl('div');
+	div.className = className;
+	return div;
+};
 
 const createAEl = (className, href) => {
-  const a = createEl('a');
-  a.className = className;
-  a.href = href;
-  return a;
-}
+	const a = createEl('a');
+	a.className = className;
+	a.href = href;
+	return a;
+};
 
 const createImgEl = (className, src, alt) => {
-  const img = createEl('img');
-  img.className = className;
-  img.src = src;
-  img.alt = alt;
-  return img;
-}
+	const img = createEl('img');
+	img.className = className;
+	img.src = src;
+	img.alt = alt;
+	return img;
+};
 
 const createPElWithText = (className, text) => {
-  const p = createEl('p');
-  p.className = className;
-  p.append(text);
-  return p;
-}
+	const p = createEl('p');
+	p.className = className;
+	p.append(text);
+	return p;
+};
 
 const toggleMsg = (msg, time) => {
-  msg.classList.toggle('hidden');
-  setTimeout(() => msg.classList.toggle('hidden'), time);
-}
+	msg.classList.toggle('hidden');
+	setTimeout(() => msg.classList.toggle('hidden'), time);
+};

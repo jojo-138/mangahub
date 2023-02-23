@@ -1,27 +1,27 @@
-#card-container {
-  gap: 0.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+.card-container {
+	gap: 0.5rem;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
 .manga-card {
-  position: relative;
-  height: auto;
-  border-radius: 5px;
-  overflow: hidden;
-  transition: transform .4s ease-in-out;
+	position: relative;
+	height: auto;
+	border-radius: 5px;
+	overflow: hidden;
+	transition: transform 0.4s ease-in-out;
 }
 
 .manga-card:hover {
-  transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 .card-title {
-  position: absolute;
-  bottom: 0;
-  z-index: 2;
-  height: 25%;
-  font-size: 0.75rem;
-  color: #ffffff;
-  background-color: #00000081;
-  padding: 0.2rem;
+	position: absolute;
+	bottom: 0;
+	z-index: 2;
+	height: auto;
+	font-size: 0.75rem;
+	color: #ffffff;
+	background-color: #00000081;
+	padding: 0.2rem;
 }

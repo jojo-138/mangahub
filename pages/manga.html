@@ -1,101 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A place to read manga to your heart's content. For free.">
-    <link rel="stylesheet" href="/mangahub/src/styles/pages/manga.css">
-    <link rel="icon" href="/mangahub/img/mh_logo.png">
-    <title>MangaHub | [manga_title] </title>
-</head>
-<body>
-  <nav>
-    <div class="page-container d-flex" id="navbar">
-      <a href="/mangahub/">
-        <img src="/mangahub/img/mangahub_logo.png" alt="MangaHub Logo">
-      </a>
-      <div class="d-flex">
-        <a href="/mangahub/" class="navlink">Home</a>
-        <a href="/mangahub/pages/latest.html" class="navlink">Latest</a>
-        <a href="/mangahub/pages/browse.html" class="navlink">Browse</a>
-        <a href="/mangahub/pages/search.html" class="navlink">Search</a>
-      </div>
-      <form id="nav-form" action="/mangahub/pages/search.html">
-        <input type="text" class="h-100" id="nav-search" name="searched" placeholder="Search MangaHub">
-        <button type="submit" class="h-100">
-          <img src="/mangahub/img/search.png" alt="Submit">
-        </button>
-      </form>
-      <div id="nav-signin-register-link">
-        <a href="/mangahub/pages/signin.html" class="navlink">Sign In</a>
-        <a href="/mangahub/pages/register.html" class="navlink">Register</a>
-      </div>
-      <div id="nav-icons" class="hidden">
-        <a href="/mangahub/pages/profile.html" class="nav-icon">
-          <img src="/mangahub/img/user.png" alt="Profile">
-        </a>
-        <a href="https://mangahub-server.herokuapp.com/sign-out" class="nav-icon">
-          <img src="/mangahub/img/sign_out.png" alt="Sign Out">
-        </a>
-      </div>
-    </div>
-  </nav>
-  <main class="page-container w-100">
-    <div id="manga-error" class="hidden">
-      <h1>The manga being viewed is currently unavailable.</h1>
-    </div>
-    <div id="manga-pg">
-      <h1 id="manga-title"></h1>
-      <p id="alt-titles"></p>
-      <hr>
-      <div class="d-flex" id="manga-details">
-        <img src="" id="manga-img" alt="manga image">
-        <div class="d-flex" id="manga-info">
-          <p><b class="grey-text">Author:</b> <span id="author"></span></p>
-          <p><b class="grey-text">Genres:</b> <span id="genres"></span></p>
-          <p><b class="grey-text">Status:</b> <span id="status"></span></p>
-          <p><b class="grey-text">Views:</b> <span id="views"></span></p>
-          <div>
-            <h3 class="grey-text">Summary:</h3>
-            <p id="summary"></p>
-          </div>
-        </div>
-      </div>
-      <div id="follow">
-        <b>&#x2764; Follow</b>
-      </div>
-      <div id="following" class="hidden">
-        <b>&#x2764; Following</b>
-      </div>
-      <div id="error-msg" class="hidden"></div>
-      <h2>Chapters:</h2>
-      <div class="d-flex" id="chapter-table"></div>
-    </div>
-  </main>
-  <footer>
-    <div class="page-container d-grid" id="footer">
-      <div id="desc">
-        <h3>MangaHub</h3>
-        <p>
-          A place to read manga to your heart's content. For free.
-        </p>
-        <p>&copy; 2022 | All Rights Reserved</p>
-      </div>
-      <div id="contact">
-        <h3>Contact Us</h3>
-        <a href="#!" class="footer-link">mangahub@gmail.com</a>
-        <p>123-456-7890</p>
-        <p>1234 John Blvd. LA</p>
-      </div>
-      <div id="socials">
-        <h3>Socials</h3>
-        <a href="#!" class="footer-link">Facebook</a><br>
-        <a href="#!" class="footer-link">Twitter</a><br>
-        <a href="#!" class="footer-link">Instagram</a><br>
-      </div>
-    </div>
-  </footer>
-  <script type="text/javascript" src="/mangahub/src/pages/manga.js"></script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="A place to read manga to your heart's content. For free." />
+		<link rel="stylesheet" href="/mangahub/src/styles/pages/manga.css" />
+		<link rel="icon" href="/mangahub/img/mh_logo.png" />
+		<title>MangaHub | [manga_title]</title>
+	</head>
+	<body>
+		<nav>
+			<div class="page-container d-flex" id="navbar">
+				<a href="/mangahub/">
+					<img src="/mangahub/img/mangahub_logo.png" alt="MangaHub Logo" />
+				</a>
+				<div class="d-flex">
+					<a href="/mangahub/" class="navlink">Home</a>
+					<a href="/mangahub/pages/browse.html?group=asura" class="navlink">Browse</a>
+					<a href="/mangahub/pages/search.html" class="navlink">Search</a>
+				</div>
+				<form id="nav-form" action="/mangahub/pages/search.html">
+					<input
+						type="text"
+						class="h-100"
+						id="nav-search"
+						name="searched"
+						placeholder="Search MangaHub" />
+					<button type="submit" class="h-100">
+						<img src="/mangahub/img/search.png" alt="Submit" />
+					</button>
+				</form>
+				<div id="nav-signin-register-link">
+					<a href="/mangahub/pages/signin.html" class="navlink">Sign In</a>
+					<a href="/mangahub/pages/register.html" class="navlink">Register</a>
+				</div>
+				<div id="nav-icons" class="hidden">
+					<a href="/mangahub/pages/profile.html" class="nav-icon">
+						<img src="/mangahub/img/user.png" alt="Profile" />
+					</a>
+					<a href="https://mangahub-server.herokuapp.com/sign-out" class="nav-icon">
+						<img src="/mangahub/img/sign_out.png" alt="Sign Out" />
+					</a>
+				</div>
+			</div>
+		</nav>
+		<main class="page-container w-100">
+			<div id="manga-error" class="hidden">
+				<h1>The manga being viewed is currently unavailable.</h1>
+			</div>
+			<div id="manga-pg">
+				<div class="d-flex" id="manga-details">
+					<img src="" id="manga-img" alt="" />
+					<div>
+						<h1 id="manga-title"></h1>
+						<br />
+						<h3 class="grey-text">Summary:</h3>
+						<p id="summary"></p>
+					</div>
+				</div>
+				<div id="follow">
+					<b>&#x2764; Follow</b>
+				</div>
+				<div id="following" class="hidden">
+					<b>&#x2764; Following</b>
+				</div>
+				<div id="error-msg" class="hidden"></div>
+				<h2>Chapters:</h2>
+				<div class="d-flex" id="chapter-table"></div>
+			</div>
+		</main>
+		<footer>
+			<div class="page-container d-grid" id="footer">
+				<div id="desc">
+					<h3>MangaHub</h3>
+					<p>A place to read manga to your heart's content. For free.</p>
+					<p>&copy; 2022 | All Rights Reserved</p>
+				</div>
+				<div id="contact">
+					<h3>Contact Us</h3>
+					<a href="#!" class="footer-link">mangahub@gmail.com</a>
+					<p>123-456-7890</p>
+					<p>1234 John Blvd. LA</p>
+				</div>
+				<div id="socials">
+					<h3>Socials</h3>
+					<a href="#!" class="footer-link">Facebook</a><br />
+					<a href="#!" class="footer-link">Twitter</a><br />
+					<a href="#!" class="footer-link">Instagram</a><br />
+				</div>
+			</div>
+		</footer>
+		<script type="text/javascript" src="/mangahub/src/pages/manga.js"></script>
+	</body>
 </html>

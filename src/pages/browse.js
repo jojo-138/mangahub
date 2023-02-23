@@ -1,196 +1,117 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const mangaContainer = document.getElementById('manga-container');
-  const filterForm = document.getElementById('filter-form');
-  const checkbox = document.querySelectorAll('input[type="checkbox"]');
-  const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
-  const navIcons = document.getElementById('nav-icons');
+	const mangaContainer = document.getElementById('manga-container');
+	const selected = document.getElementById('selected');
+	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
+	const navIcons = document.getElementById('nav-icons');
+	const selectedGroup = window.location.search.substring(7) || 'asura';
+	console.log(selectedGroup);
+	const userIsSignedIn = async () => {
+		const data = await fetchIsSignedIn();
+		if (data.status === 'success') {
+			navSigninRegisterLink.classList.toggle('hidden');
+			navIcons.classList.toggle('hidden');
+		}
+	};
 
-  const userIsSignedIn = async() => {
-    const data = await fetchIsSignedIn();
-    if (data.status === 'success') {
-      navSigninRegisterLink.classList.toggle('hidden');
-      navIcons.classList.toggle('hidden');
-    }
-  }
+	const getBrowse = async () => {
+		const mangas = await fetchMangaAPI(selectedGroup);
+		mangas.forEach((manga) =>
+			generateMangaItem(
+				mangaContainer,
+				mangaUrl(manga._id, manga._type),
+				manga.MangaCover,
+				manga.MangaTitle,
+				manga.MangaSynopsis
+			)
+		);
+	};
 
-  const ifParamsPresentElse = () => {
-    if (window.location.search) { // with filter/s selected
-      getValuesFromStorage(mangaContainer);
-    } else { // initialization, with no filters selected
-      getBrowse(mangaContainer);
-    }
-  }
-
-  const onClickGenreCheckbox = () => {
-    for (let i = 1; i < checkbox.length; i++) {
-      checkbox[i].onclick = () => {
-        checkbox[0].checked = false;
-      }
-    }
-  }
-
-  const onClickAllCheckbox = () => {
-    checkbox[0].onclick = () => {
-      for (let i = 1; i < checkbox.length; i++) {
-        checkbox[i].checked = false;
-      }
-    }
-  }
-
-  userIsSignedIn();
-  ifParamsPresentElse();
-  onClickAllCheckbox(); // when 'All' is clicked, uncheck everything else
-  onClickGenreCheckbox(); // when other genres are clicked, uncheck 'All'
-
-  filterForm.onsubmit = (e) => {
-    e.preventDefault();
-    const checkedGenres = document.querySelectorAll('input[type="checkbox"]:checked');
-    const completion = document.querySelector('input[name="completion"]:checked').value;
-    const sort = document.querySelector('input[name="sort-by"]:checked').value;
-    const genres = checkedGenres.length ? Array.from(checkedGenres).map(item => item.value).join(',') : 'all';
-    if (genres === 'all') checkbox[0].checked = true; // check 'All' if no genre is selected
-    getBrowse(mangaContainer, sort, completion, genres);
-    changeUrlParams('genres', genres);
-    changeUrlParams('completion', completion);
-    changeUrlParams('sort', sort);
-    saveParamsToStorage(genres, completion, sort);
-  };
-})
+	userIsSignedIn();
+	getBrowse();
+	selected.append(selectedGroup[0].toUpperCase() + selectedGroup.substring(1));
+});
 
 // helpers
-const fetchIsSignedIn = async() => {
-  const options = {
-    method: 'GET',
-    credentials: 'include',
-  };
-  const res = await fetch('https://mangahub-server.herokuapp.com/is-signed-in', options);
-  const data = await res.json();
-  return data;
-}
+const fetchIsSignedIn = async () => {
+	const options = {
+		method: 'GET',
+		credentials: 'include',
+	};
+	const res = await fetch('https://mangahub-server.herokuapp.com/is-signed-in', options);
+	const data = await res.json();
+	return data;
+};
 
-const fetchMangaAPI = async (type = 'topview', state = 'all', category = 'all') => {
-  const options = {
-    method: 'GET',
-    headers: {
-      'X-RapidAPI-Key': '53070c96a9msh916468f548d07ccp1710ddjsn59db916479d6',
-      'X-RapidAPI-Host': 'manga-scraper-for-mangakakalot-website.p.rapidapi.com'
-    }
-  };
-  const res = await fetch(`https://manga-scraper-for-mangakakalot-website.p.rapidapi.com/browse?type=${type}&state=${state}&category=${category}&page=1`, options);
-  const data = await res.json();
-  return data.data;
-}
+const fetchMangaAPI = async (group = 'asura') => {
+	const options = {
+		method: 'GET',
+		headers: {
+			'X-RapidAPI-Key': '53070c96a9msh916468f548d07ccp1710ddjsn59db916479d6',
+			'X-RapidAPI-Host': 'manga-scrapper.p.rapidapi.com',
+		},
+	};
+	const res = await fetch(
+		`https://manga-scrapper.p.rapidapi.com/series/?provider=${group}&limit=24`,
+		options
+	);
+	const data = await res.json();
+	return data.data.series;
+};
 
-const generateMangaItem = (container, mLink, mImg, mTitle, mLatestLink, mLatestName, mDesc) => {
-  if (mTitle.length > 83) mTitle = mTitle.slice(0, 83) + '...';
-  if (mDesc.length > 150) mDesc = mDesc.slice(0, 150) + '...';
-  if (mLatestName.length > 44) mLatestName = mLatestName.slice(0, 44) + '...';
+const generateMangaItem = (
+	container,
+	mLink,
+	mImg = '/mangahub/img/img_placeholder.jpg',
+	mTitle,
+	mDesc = 'No available description.'
+) => {
+	if (mTitle.length > 83) mTitle = mTitle.slice(0, 83) + '...';
+	let desc = mDesc.replaceAll('<br>', '');
+	if (desc.length > 200) desc = desc.slice(0, 200) + '...';
 
-  const divContainer = createDivEl('d-flex manga-item');
-  const aImg = createAEl(null, mLink);
-  const img = createImgEl('manga-img h-100', mImg, mTitle);
-  const divInfo = createDivEl('d-flex manga-info');
-  const aTitle = createAEl('manga-title', mLink);
-  const p = createPElWithText('manga-desc', mDesc);
-  const aLatest = createAEl('manga-latest', mLatestLink);
-  
-  aLatest.append(mLatestName);
-  aTitle.append(mTitle);
-  divInfo.append(aTitle, p, aLatest);
-  aImg.appendChild(img);
-  divContainer.append(aImg, divInfo);
-  container.appendChild(divContainer);
-}
+	const divContainer = createDivEl('d-flex manga-item');
+	const aImg = createAEl(null, mLink);
+	const img = createImgEl('manga-img h-100', mImg, mTitle);
+	const divInfo = createDivEl('d-flex manga-info');
+	const aTitle = createAEl('manga-title', mLink);
+	const p = createPElWithText('manga-desc', desc);
 
-const getBrowse = async (container, type, state, category) => {
-  const data = await fetchMangaAPI(type, state, category);
-  emptyParent(container);
-  data.forEach(item => {
-    let mangaId = item.id;
-    let latestId = item.latest_chapter_url;
-    let chapterId;
-    if (mangaId.includes('/')) {
-      chapterId = mangaId.slice(mangaId.indexOf('/') + 1);
-      latestId = latestId.slice(latestId.indexOf(chapterId));
-    } else {
-      latestId = latestId.slice(latestId.indexOf(mangaId));
-    }
-    generateMangaItem(container, mangaUrl(mangaId), item.thumbnail_url, item.title, chapterUrl(mangaId, latestId), item.latest_chapter_title, item.description);
-  })
-}
+	aTitle.append(mTitle);
+	divInfo.append(aTitle, p);
+	aImg.appendChild(img);
+	divContainer.append(aImg, divInfo);
+	container.appendChild(divContainer);
+};
 
-const getValuesFromStorage = (container) => {
-  const genre = sessionStorage.getItem('genre');
-  const completion = sessionStorage.getItem('completion');
-  const sort = sessionStorage.getItem('sort');
-  getBrowse(container, sort, completion, genre);
-  checkBoxValues(genre);
-  checkRadioValues(completion);
-  checkRadioValues(sort);
-}
-
-// check checkboxes and radios based on session storage values
-const checkBoxValues = (value) => {
-  if (value === 'all') return;
-  document.getElementById('all').checked = false;
-  !value.includes(',') ? checkItem(value) : value.split(',').forEach(item => checkItem(item));
-}
-
-const checkRadioValues = (value) => (value !== 'completion-all' || value !== 'views') && checkItem(value);
-
-const saveParamsToStorage = (genres, completion, sort) => {
-  sessionStorage.setItem('genre', genres);
-  sessionStorage.setItem('completion', completion);
-  sessionStorage.setItem('sort', sort);
-}
-
-const mangaUrl = (mangaId) => `/mangahub/pages/manga.html?id=${encodeURIComponent(mangaId)}`;
-
-const chapterUrl = (mangaId, chapterId) => `/mangahub/pages/chapter.html?mangaId=${encodeURIComponent(mangaId)}&chapterId=${encodeURIComponent(chapterId)}`;
+const mangaUrl = (mangaId, group) => `/mangahub/pages/manga.html?id=${mangaId}&provider=${group}`;
 
 // utils
 const createEl = (el) => document.createElement(el);
 
 const createDivEl = (className) => {
-  const div = createEl('div');
-  div.className = className;
-  return div;
-}
+	const div = createEl('div');
+	div.className = className;
+	return div;
+};
 
 const createAEl = (className, href) => {
-  const a = createEl('a');
-  a.className = className;
-  a.href = href;
-  return a;
-}
+	const a = createEl('a');
+	a.className = className;
+	a.href = href;
+	return a;
+};
 
 const createImgEl = (className, src, alt) => {
-  const img = createEl('img');
-  img.className = className;
-  img.src = src;
-  img.alt = alt;
-  return img;
-}
+	const img = createEl('img');
+	img.className = className;
+	img.src = src;
+	img.alt = alt;
+	return img;
+};
 
 const createPElWithText = (className, text) => {
-  const p = createEl('p');
-  p.className = className;
-  p.append(text);
-  return p;
-}
-
-const checkItem = (value) => document.querySelector(`input[value="${value}"]`).checked = true;
-
-const changeUrlParams = (key, value) => {
-  const queryParams = new URLSearchParams(window.location.search);
-  queryParams.set(key, value);
-  history.pushState(null, null, "?" + queryParams.toString());
-}
-
-const emptyParent = (parent) => {
-  let firstChild = parent.firstElementChild;
-  while (firstChild) {
-    parent.removeChild(firstChild);
-    firstChild = parent.firstElementChild;
-  }
-}
+	const p = createEl('p');
+	p.className = className;
+	p.append(text);
+	return p;
+};
