@@ -169,21 +169,6 @@ const createAEl = (className, href) => {
 	return a;
 };
 
-const createImgEl = (className, src, alt) => {
-	const img = createEl('img');
-	img.className = className;
-	img.src = src;
-	img.alt = alt;
-	return img;
-};
-
-const createPElWithText = (className, text) => {
-	const p = createEl('p');
-	p.className = className;
-	p.append(text);
-	return p;
-};
-
 const toggleMsg = (msg, time) => {
 	msg.classList.toggle('hidden');
 	setTimeout(() => msg.classList.toggle('hidden'), time);

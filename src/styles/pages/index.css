@@ -3,3 +3,7 @@
 @import '../partials/footer.css';
 @import '../partials/manga_cards.css';
 @import '../media_queries.css';
+
+h1 {
+	margin-block: 0.5rem 0.7rem;
+}

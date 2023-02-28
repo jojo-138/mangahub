@@ -82,7 +82,7 @@ const generateMangaItem = (
 ) => {
 	if (mTitle.length > 83) mTitle = mTitle.slice(0, 83) + '...';
 	let desc = mDesc.replaceAll('<br>', '');
-	if (mDesc.length > 200) mDesc = mDesc.slice(0, 200) + '...';
+	if (desc.length > 200) desc = desc.slice(0, 200) + '...';
 
 	const divContainer = createDivEl('d-flex manga-item');
 	const aImg = createAEl(null, mLink);
@@ -176,6 +176,11 @@ const createImgEl = (className, src, alt) => {
 	img.className = className;
 	img.src = src;
 	img.alt = alt;
+	img.onerror = () => {
+		img.onerror = '';
+		img.src = '/mangahub/img/img_placeholder.jpg';
+		return true;
+	};
 	return img;
 };
 

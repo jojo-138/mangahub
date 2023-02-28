@@ -94,6 +94,11 @@ const createImgEl = (className, src, alt) => {
 	img.className = className;
 	img.src = src;
 	img.alt = alt;
+	img.onerror = () => {
+		img.onerror = '';
+		img.src = '/mangahub/img/img_placeholder.jpg';
+		return true;
+	};
 	return img;
 };
 
