@@ -24,22 +24,27 @@ document.addEventListener('DOMContentLoaded', () => {
 		const manga = await fetchMangaAPI('manga', mangaId, provider);
 		const chapters = await fetchMangaAPI('chapters', mangaId, provider);
 
-		document.title = `MangaHub | ${manga.MangaTitle ?? 'Error'}`;
+		document.title = `MangaHub | ${manga.shortTitle ?? 'Error'}`;
 
 		if (!manga) {
 			mangaError = true;
 			mangaErrorMsg.classList.remove('hidden');
 			mangaPg.classList.add('hidden');
 		} else {
-			generateMangaDetails(manga.MangaTitle, manga.MangaCover, manga.MangaSynopsis);
-			chapters.sort((a, b) => a.ChapterOrder - b.ChapterOrder);
+			generateMangaDetails(
+				manga.title,
+				manga.coverURL,
+				manga.genre && manga.genre.join(', '),
+				manga.synopsis
+			);
+			chapters.sort((a, b) => a.chapterNum - b.chapterNum);
 			chapters.forEach((chapter) =>
 				generateChapterList(
 					chapterTbl,
-					chapterUrl(mangaId, chapter._id, provider),
-					chapter.ChapterNumber,
-					chapter.ChapterTitle,
-					chapter.ChapterDate
+					chapterUrl(mangaId, chapter.slug, provider),
+					chapter.chapterNum,
+					chapter.fullTitle,
+					chapter.updatedAt
 				)
 			);
 		}
@@ -120,23 +125,30 @@ const fetchMangaAPI = async (fetchFor, id, group) => {
 	};
 	const res = await fetch(
 		fetchFor === 'manga'
-			? `https://manga-scrapper.p.rapidapi.com/series/${id}/?provider=${group}`
-			: `https://manga-scrapper.p.rapidapi.com/series/${id}/chapters/?provider=${group}`,
+			? `https://manga-scrapper.p.rapidapi.com/webtoons/${id}?provider=${group}`
+			: `https://manga-scrapper.p.rapidapi.com/chapters/all?provider=${group}&webtoon=${id}`,
 		options
 	);
 	const data = await res.json();
-	return fetchFor === 'manga' ? data.data : data.data.series;
+	return data;
 };
 
-const generateMangaDetails = (mTitle, mImg, mSummary) => {
+const generateMangaDetails = (mTitle, mImg, mGenre = 'Uncategorized', mSummary) => {
 	const title = document.getElementById('manga-title');
 	const img = document.getElementById('manga-img');
+	const genre = document.getElementById('genre');
 	const summary = document.getElementById('summary');
 
 	title.textContent = mTitle;
 	img.src = mImg;
 	img.alt = mTitle;
-	summary.textContent = mSummary.replaceAll('<br>', '');
+	img.onerror = () => {
+		img.onerror = '';
+		img.src = '/mangahub/img/img_placeholder.jpg';
+		return true;
+	};
+	genre.textContent = mGenre;
+	summary.textContent = mSummary.replaceAll(/<br(?: \/)?>/g, '');
 };
 
 const generateChapterList = (container, cLink, cNum, cTitle, cUpdated) => {

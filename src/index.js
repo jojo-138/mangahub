@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+	const anigliContainer = document.getElementById('anigli-container');
 	const asuraContainer = document.getElementById('asura-container');
+	const cosmicContainer = document.getElementById('cosmic-container');
 	const flameContainer = document.getElementById('flame-container');
 	const realmContainer = document.getElementById('realm-container');
 	const luminousContainer = document.getElementById('luminous-container');
+	const suryaContainer = document.getElementById('surya-container');
+	const voidContainer = document.getElementById('void-container');
 	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
 	const navIcons = document.getElementById('nav-icons');
 
@@ -16,21 +20,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const getManga = async (group, container) => {
 		const mangas = await fetchMangaAPI(group);
+		Array.isArray(mangas) && emptyParent(container);
 		mangas.forEach((manga) =>
 			generateMangaCard(
 				container,
-				mangaUrl(manga._id, manga._type),
-				manga.MangaCover,
-				manga.MangaTitle
+				mangaUrl(manga.slug, manga.provider),
+				manga.coverURL,
+				manga.title
 			)
 		);
 	};
 
+	const scanGroups = [
+		{
+			name: 'anigli',
+			container: anigliContainer,
+		},
+		{
+			name: 'asura',
+			container: asuraContainer,
+		},
+		{
+			name: 'cosmic',
+			container: cosmicContainer,
+		},
+		{
+			name: 'flame',
+			container: flameContainer,
+		},
+		{
+			name: 'realm',
+			container: realmContainer,
+		},
+		{
+			name: 'luminous',
+			container: luminousContainer,
+		},
+		{
+			name: 'surya',
+			container: suryaContainer,
+		},
+		{
+			name: 'void',
+			container: voidContainer,
+		},
+	];
+
 	userIsSignedIn();
-	getManga('asura', asuraContainer);
-	getManga('flame', flameContainer);
-	getManga('realm', realmContainer);
-	getManga('luminous', luminousContainer);
+	scanGroups.forEach((group) => getManga(group.name, group.container));
 });
 
 // helpers
@@ -53,11 +90,11 @@ const fetchMangaAPI = async (group) => {
 		},
 	};
 	const res = await fetch(
-		`https://manga-scrapper.p.rapidapi.com/series/?provider=${group}&limit=5`,
+		`https://manga-scrapper.p.rapidapi.com/webtoons?provider=${group}&page=1&limit=5`,
 		options
 	);
-	const data = await res.json();
-	return data.data.series;
+	const mangas = await res.json();
+	return mangas;
 };
 
 const generateMangaCard = (container, mLink, mImg, mTitle) => {
@@ -107,4 +144,12 @@ const createPElWithText = (className, text) => {
 	p.className = className;
 	p.append(text);
 	return p;
+};
+
+const emptyParent = (parent) => {
+	let firstChild = parent.firstElementChild;
+	while (firstChild) {
+		parent.removeChild(firstChild);
+		firstChild = parent.firstElementChild;
+	}
 };

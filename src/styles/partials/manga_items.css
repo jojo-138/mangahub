@@ -32,7 +32,8 @@
 	color: #0f4f5e;
 }
 
-.manga-desc {
+.manga-desc,
+.manga-genre {
 	font-size: 0.8rem;
 	color: #8f8f8f;
 	overflow-wrap: anywhere;

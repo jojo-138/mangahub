@@ -1,15 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const mangaContainer = document.getElementById('manga-container');
-	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
-	const navIcons = document.getElementById('nav-icons');
-
-	const userIsSignedIn = async () => {
-		const data = await fetchServerAPI('isSignedIn');
-		if (data.status === 'success') {
-			navSigninRegisterLink.classList.toggle('hidden');
-			navIcons.classList.toggle('hidden');
-		}
-	};
+	const loading = document.getElementById('loading');
 
 	const getUser = async () => {
 		const data = await fetchServerAPI('user');
@@ -21,19 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
 	const getFaves = async () => {
 		const data = await fetchServerAPI('faves');
 		if (data.status === 'error') return;
+		loading.classList.add('hidden');
 		data.faves.forEach(async (item) => {
 			const manga = await fetchMangaAPI(item.manga_id, item.provider);
 			generateMangaItem(
 				mangaContainer,
-				mangaUrl(item.manga_id, item.provider),
-				manga.MangaCover,
-				manga.MangaTitle,
-				manga.MangaSynopsis
+				mangaUrl(manga.slug, manga.provider),
+				manga.coverURL,
+				manga.title,
+				manga.synopsis,
+				manga.genre && manga.genre.join(', '),
+				manga.provider.substring(0, 1).toUpperCase() + manga.provider.substring(1)
 			);
 		});
 	};
 
-	userIsSignedIn();
 	getUser();
 	getFaves();
 });
@@ -46,9 +39,7 @@ const serverOptions = {
 
 const fetchServerAPI = async (action) => {
 	const link =
-		action === 'isSignedIn'
-			? 'https://mangahub-server.herokuapp.com/is-signed-in'
-			: action === 'user'
+		action === 'user'
 			? 'https://mangahub-server.herokuapp.com/user'
 			: 'https://mangahub-server.herokuapp.com/faves';
 	const res = await fetch(link, serverOptions);
@@ -65,11 +56,11 @@ const fetchMangaAPI = async (id, group) => {
 		},
 	};
 	const res = await fetch(
-		`https://manga-scrapper.p.rapidapi.com/series/${id}/?provider=${group}`,
+		`https://manga-scrapper.p.rapidapi.com/webtoons/${id}?provider=${group}`,
 		options
 	);
 	const data = await res.json();
-	return data.data;
+	return data;
 };
 
 const generateMangaItem = (
@@ -77,10 +68,12 @@ const generateMangaItem = (
 	mLink,
 	mImg = '/mangahub/img/img_placeholder.jpg',
 	mTitle,
-	mDesc = 'No available description.'
+	mDesc = 'No available description.',
+	mGenre,
+	mProvider
 ) => {
 	if (mTitle.length > 83) mTitle = mTitle.slice(0, 83) + '...';
-	let desc = mDesc.replaceAll('<br>', '');
+	let desc = mDesc.replaceAll(/<br(?: \/)?>/g, '');
 	if (desc.length > 200) desc = desc.slice(0, 200) + '...';
 
 	const divContainer = createDivEl('d-flex manga-item');
@@ -89,9 +82,11 @@ const generateMangaItem = (
 	const divInfo = createDivEl('d-flex manga-info');
 	const aTitle = createAEl('manga-title', mLink);
 	const pDesc = createPElWithText('manga-desc', desc);
+	const pGenre = createPElWithText('manga-genre', `Genre: ${mGenre}`);
+	const pProvider = createPElWithText('manga-genre', `Provider: ${mProvider} Scans`);
 
 	aTitle.append(mTitle);
-	divInfo.append(aTitle, pDesc);
+	divInfo.append(aTitle, pDesc, pGenre, pProvider);
 	aImg.appendChild(img);
 	divContainer.append(aImg, divInfo);
 	container.appendChild(divContainer);

@@ -5,12 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	const nextBtns = document.getElementsByClassName('next');
 	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
 	const navIcons = document.getElementById('nav-icons');
+	const title = document.getElementById('title');
 	const query = window.location.search;
 	const mangaId = query.substring(query.indexOf('mangaid=') + 10, query.indexOf('&'));
 	let chapterId = query.substring(query.indexOf('chapterId=') + 10, query.indexOf('&provider'));
 	const provider = query.substring(query.indexOf('provider=') + 9);
-	const mangaLink = `https://manga-scrapper.p.rapidapi.com/series/${mangaId}/chapters/?provider=${provider}`;
-	let chapterLink = `https://manga-scrapper.p.rapidapi.com/series/${mangaId}/chapter/${chapterId}/?provider=${provider}`;
+	const mangaLink = `https://manga-scrapper.p.rapidapi.com/chapters/all?provider=${provider}&webtoon=${mangaId}`;
+	let chapterLink = `https://manga-scrapper.p.rapidapi.com/chapters/${chapterId}?provider=${provider}&webtoon=${mangaId}`;
 
 	const userIsSignedIn = async () => {
 		const data = await fetchIsSignedIn();
@@ -22,38 +23,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const getChapters = async () => {
 		let chapters = await fetchMangaAPI(mangaLink);
-		const title = document.getElementById('title');
-		const formatTitle = mangaId
-			.replaceAll('-', ' ')
-			.split(' ')
-			.map((word) => word[0].toUpperCase() + word.substring(1))
-			.join(' ');
-		title.textContent = formatTitle;
-		document.title = `MangaHub | ${formatTitle}`;
-		chapters.series.sort((a, b) => a.ChapterOrder - b.ChapterOrder);
-		generateChapterList(dropdowns, chapters.series, chapterId);
+		title.textContent = formatTitle(mangaId);
+		document.title = `MangaHub | ${formatTitle(chapterId)}`;
+		chapters.sort((a, b) => a.chapterNum - b.chapterNum);
+		generateChapterList(dropdowns, chapters, chapterId);
 	};
 
 	const getChapterImgs = async (link) => {
 		const data = await fetchMangaAPI(link);
+		document.title = `MangaHub | ${data.fullTitle}`;
 		emptyParent(chapterImgs);
-		data.ChapterContent.forEach((img, i) => generateChapterImgs(img, i, chapterImgs));
+		window.scrollTo(0, 0);
+		data.contentURL.forEach((img, i) => generateChapterImgs(img, i + 1, chapterImgs));
 		Array.from(prevBtns).forEach(
 			(btn) =>
-				(btn.onclick = !data.ChapterPrevSlug
+				(btn.onclick = !data.chapterNav.prevSlug
 					? null
-					: () => onClickPrevNextBtns(data.ChapterPrevSlug))
+					: () => onClickPrevNextBtns(data.chapterNav.prevSlug))
 		);
 		Array.from(nextBtns).forEach(
 			(btn) =>
-				(btn.onclick = !data.ChapterNextSlug
+				(btn.onclick = !data.chapterNav.nextSlug
 					? null
-					: () => onClickPrevNextBtns(data.ChapterNextSlug))
+					: () => onClickPrevNextBtns(data.chapterNav.nextSlug))
 		);
 	};
 
 	const onClickPrevNextBtns = (id) => {
-		chapterLink = `https://manga-scrapper.p.rapidapi.com/series/${mangaId}/chapter/${id}/?provider=${provider}`;
+		chapterLink = `https://manga-scrapper.p.rapidapi.com/chapters/${id}?provider=${provider}&webtoon=${mangaId}`;
 		getChapterImgs(chapterLink);
 		changeUrlParams('chapterId', id);
 		selectCurrChapter(id);
@@ -69,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		dropdown.onchange = () => {
 			const selected = dropdown.value;
 			chapterId = selected;
-			chapterLink = `https://manga-scrapper.p.rapidapi.com/series/${mangaId}/chapter/${chapterId}/?provider=${provider}`;
+			chapterLink = `https://manga-scrapper.p.rapidapi.com/chapters/${chapterId}?provider=${provider}&webtoon=${mangaId}`;
 			getChapterImgs(chapterLink);
 			changeUrlParams('chapterId', selected);
 			selectCurrChapter(chapterId);
@@ -98,15 +95,15 @@ const fetchMangaAPI = async (link) => {
 	};
 	const res = await fetch(link, options);
 	const data = await res.json();
-	return data.data;
+	return data;
 };
 
 const generateChapterList = (dropdowns, mChapters, chapterId) => {
 	Array.from(dropdowns).forEach((dropdown) => {
 		mChapters.forEach((item) => {
 			const opt = document.createElement('option');
-			opt.value = item._id;
-			opt.append(item.ChapterTitle);
+			opt.value = item.slug;
+			opt.append(item.shortTitle);
 			dropdown.appendChild(opt);
 		});
 		dropdown.value = chapterId;
@@ -146,4 +143,12 @@ const emptyParent = (parent) => {
 		parent.removeChild(firstChild);
 		firstChild = parent.firstElementChild;
 	}
+};
+
+const formatTitle = (title) => {
+	return title
+		.replaceAll('-', ' ')
+		.split(' ')
+		.map((word) => word[0].toUpperCase() + word.substring(1))
+		.join(' ');
 };

@@ -2,44 +2,45 @@
 @import '../partials/navbar.css';
 @import '../partials/footer.css';
 @import '../partials/manga_items.css';
+@import '../partials/loading.css';
 @import '../media_queries.css';
 
 #search-form {
-  position: relative;
-  height: 3rem;
-  margin-block: 0.7rem;
+	position: relative;
+	height: 3rem;
+	margin-block: 0.7rem;
 }
 
 #search {
-  padding-left: 0.5rem;
-  padding-right: 3.7rem;
-  font-size: 1rem;
-  border: 1px solid #adadad;
+	padding-left: 0.5rem;
+	padding-right: 3.7rem;
+	font-size: 1rem;
+	border: 1px solid #adadad;
 }
 
 #submit-btn {
-  position: absolute;
-  right: 0;
-  width: 50px;
-  background-color: #0f4f5e;
-  border: 7px solid #0f4f5e;
+	position: absolute;
+	right: 0;
+	width: 50px;
+	background-color: #0f4f5e;
+	border: 7px solid #0f4f5e;
 }
 
 #history {
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-block: 0.5rem;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	margin-block: 0.5rem;
 }
 
 .searched-item {
-  border: 1px solid #167990;
-  border-radius: 3px;
-  padding: 0.2rem;
-  cursor: pointer;
-  transition: background-color .4s, color .4s ease-out;
+	border: 1px solid #167990;
+	border-radius: 3px;
+	padding: 0.2rem;
+	cursor: pointer;
+	transition: background-color 0.4s, color 0.4s ease-out;
 }
 
 .searched-item:hover {
-  background-color: #167990;
-  color: #ffffff;
+	background-color: #167990;
+	color: #ffffff;
 }

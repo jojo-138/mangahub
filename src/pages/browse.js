@@ -3,8 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	const selected = document.getElementById('selected');
 	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
 	const navIcons = document.getElementById('nav-icons');
+	const loading = document.getElementById('loading');
 	const selectedGroup = window.location.search.substring(7) || 'asura';
-	console.log(selectedGroup);
+
 	const userIsSignedIn = async () => {
 		const data = await fetchIsSignedIn();
 		if (data.status === 'success') {
@@ -15,13 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const getBrowse = async () => {
 		const mangas = await fetchMangaAPI(selectedGroup);
+		Array.isArray(mangas) && loading.remove();
 		mangas.forEach((manga) =>
 			generateMangaItem(
 				mangaContainer,
-				mangaUrl(manga._id, manga._type),
-				manga.MangaCover,
-				manga.MangaTitle,
-				manga.MangaSynopsis
+				mangaUrl(manga.slug, manga.provider),
+				manga.coverURL,
+				manga.title,
+				manga.synopsis,
+				manga.genre && manga.genre.join(', ')
 			)
 		);
 	};
@@ -50,12 +53,22 @@ const fetchMangaAPI = async (group = 'asura') => {
 			'X-RapidAPI-Host': 'manga-scrapper.p.rapidapi.com',
 		},
 	};
-	const res = await fetch(
-		`https://manga-scrapper.p.rapidapi.com/series/?provider=${group}&limit=24`,
+	const res1 = await fetch(
+		`https://manga-scrapper.p.rapidapi.com/webtoons?provider=${group}&page=1&limit=10`,
 		options
 	);
-	const data = await res.json();
-	return data.data.series;
+	const res2 = await fetch(
+		`https://manga-scrapper.p.rapidapi.com/webtoons?provider=${group}&page=2&limit=10`,
+		options
+	);
+	const res3 = await fetch(
+		`https://manga-scrapper.p.rapidapi.com/webtoons?provider=${group}&page=3&limit=4`,
+		options
+	);
+	const mangas1 = await res1.json();
+	const mangas2 = await res2.json();
+	const mangas3 = await res3.json();
+	return [...mangas1, ...mangas2, ...mangas3];
 };
 
 const generateMangaItem = (
@@ -63,10 +76,11 @@ const generateMangaItem = (
 	mLink,
 	mImg = '/mangahub/img/img_placeholder.jpg',
 	mTitle,
-	mDesc = 'No available description.'
+	mDesc = 'No available description.',
+	mGenre
 ) => {
 	if (mTitle.length > 83) mTitle = mTitle.slice(0, 83) + '...';
-	let desc = mDesc.replaceAll('<br>', '');
+	let desc = mDesc.replaceAll(/<br(?: \/)?>/g, '');
 	if (desc.length > 200) desc = desc.slice(0, 200) + '...';
 
 	const divContainer = createDivEl('d-flex manga-item');
@@ -74,10 +88,11 @@ const generateMangaItem = (
 	const img = createImgEl('manga-img h-100', mImg, mTitle);
 	const divInfo = createDivEl('d-flex manga-info');
 	const aTitle = createAEl('manga-title', mLink);
-	const p = createPElWithText('manga-desc', desc);
+	const pDesc = createPElWithText('manga-desc', desc);
+	const pGenre = createPElWithText('manga-genre', `Genre: ${mGenre}`);
 
 	aTitle.append(mTitle);
-	divInfo.append(aTitle, p);
+	divInfo.append(aTitle, pDesc, pGenre);
 	aImg.appendChild(img);
 	divContainer.append(aImg, divInfo);
 	container.appendChild(divContainer);

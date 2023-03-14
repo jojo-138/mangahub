@@ -68,9 +68,9 @@ const fetchMangaAPI = async (input = 'solo') => {
 			'X-RapidAPI-Host': 'manga-scrapper.p.rapidapi.com',
 		},
 	};
-	const res = await fetch(`https://manga-scrapper.p.rapidapi.com/search/${input}/`, options);
+	const res = await fetch(`https://manga-scrapper.p.rapidapi.com/search?q=${input}`, options);
 	const data = await res.json();
-	return data.data.result;
+	return data;
 };
 
 const generateMangaItem = (
@@ -78,10 +78,12 @@ const generateMangaItem = (
 	mLink,
 	mImg = '/mangahub/img/img_placeholder.jpg',
 	mTitle,
-	mDesc = 'No available description.'
+	mDesc = 'No available description.',
+	mGenre,
+	mProvider
 ) => {
 	if (mTitle.length > 83) mTitle = mTitle.slice(0, 83) + '...';
-	let desc = mDesc.replaceAll('<br>', '');
+	let desc = mDesc.replaceAll(/<br(?: \/)?>/g, '');
 	if (desc.length > 200) desc = desc.slice(0, 200) + '...';
 
 	const divContainer = createDivEl('d-flex manga-item');
@@ -89,10 +91,12 @@ const generateMangaItem = (
 	const img = createImgEl('manga-img h-100', mImg, mTitle);
 	const divInfo = createDivEl('d-flex manga-info');
 	const aTitle = createAEl('manga-title', mLink);
-	const p = createPElWithText('manga-desc', desc);
+	const pDesc = createPElWithText('manga-desc', desc);
+	const pGenre = createPElWithText('manga-genre', `Genre: ${mGenre}`);
+	const pProvider = createPElWithText('manga-genre', `Provider: ${mProvider} Scans`);
 
 	aTitle.append(mTitle);
-	divInfo.append(aTitle, p);
+	divInfo.append(aTitle, pDesc, pGenre, pProvider);
 	aImg.appendChild(img);
 	divContainer.append(aImg, divInfo);
 	container.appendChild(divContainer);
@@ -115,14 +119,16 @@ const generateHistFromStorage = (container, input, btn) => {
 
 const getSearched = async (container, input) => {
 	const mangas = await fetchMangaAPI(input);
-	emptyParent(container);
+	Array.isArray(mangas) && emptyParent(container);
 	mangas.forEach((manga) =>
 		generateMangaItem(
 			container,
-			mangaUrl(manga._id),
-			manga.MangaCover,
-			manga.MangaTitle,
-			manga.MangaSynopsis
+			mangaUrl(manga.slug, manga.provider),
+			manga.coverURL,
+			manga.title,
+			manga.synopsis,
+			manga.genre && manga.genre.join(', '),
+			manga.provider.substring(0, 1).toUpperCase() + manga.provider.substring(1)
 		)
 	);
 };

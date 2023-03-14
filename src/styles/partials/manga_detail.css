@@ -4,11 +4,12 @@
 }
 
 #manga-img {
-	width: 300px;
+	width: auto;
 	height: 405px;
 }
 
-#summary {
+#summary,
+#genre {
 	text-indent: 1.5rem;
 	padding: 1rem;
 }

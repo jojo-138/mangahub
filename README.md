@@ -2,7 +2,7 @@
 
 ## About The Project :thought_balloon:
 
-Browse and search for manga, manhwa, and manhuas (Japanese, Korean, and Chinese comics, respectively) using [Manga Scrapper API](https://rapidapi.com/tigaron/api/manga-scrapper) from [RapidAPI](https://rapidapi.com/). Registered users are able to save their favorite mangas and view them all in their profile. Visit the back-end for this repo: [Mangahub server](https://github.com/jojo-138/mangahub-server).
+Browse and search for manga, manhwa, and manhuas (Japanese, Korean, and Chinese comics, respectively) using [Manga Scrapper API v2](https://rapidapi.com/tigaron/api/manga-scrapper) from [RapidAPI](https://rapidapi.com/). Registered users are able to save their favorite mangas and view them all in their profile. Visit the back-end for this repo: [Mangahub server](https://github.com/jojo-138/mangahub-server).
 <br>
 <br>
 _Note: View [Issues](#issues) regarding [Manga Scrapper API](https://rapidapi.com/tigaron/api/manga-scrapper)._
@@ -27,4 +27,4 @@ _Note: View [Issues](#issues) regarding [Manga Scrapper API](https://rapidapi.co
 ## Issues
 
 - Some mangas from [Manga Scrapper API](https://rapidapi.com/tigaron/api/manga-scrapper) are unavailable.
-- The API subscription used is <b>Basic</b> which is limited to 700 requests / month and <u>7 requests / minute</u>!
+- The API subscription used is <b>PRO</b> which is limited to <u>21 requests / minute</u>!

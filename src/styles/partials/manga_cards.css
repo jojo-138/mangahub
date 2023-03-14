@@ -1,6 +1,6 @@
 .card-container {
 	gap: 0.5rem;
-	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
 }
 
 .manga-card {
