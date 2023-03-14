@@ -1,12 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-	const anigliContainer = document.getElementById('anigli-container');
 	const asuraContainer = document.getElementById('asura-container');
 	const cosmicContainer = document.getElementById('cosmic-container');
 	const flameContainer = document.getElementById('flame-container');
 	const realmContainer = document.getElementById('realm-container');
 	const luminousContainer = document.getElementById('luminous-container');
 	const suryaContainer = document.getElementById('surya-container');
-	const voidContainer = document.getElementById('void-container');
 	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
 	const navIcons = document.getElementById('nav-icons');
 
@@ -33,10 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const scanGroups = [
 		{
-			name: 'anigli',
-			container: anigliContainer,
-		},
-		{
 			name: 'asura',
 			container: asuraContainer,
 		},
@@ -59,10 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		{
 			name: 'surya',
 			container: suryaContainer,
-		},
-		{
-			name: 'void',
-			container: voidContainer,
 		},
 	];
 
