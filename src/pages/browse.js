@@ -54,15 +54,15 @@ const fetchMangaAPI = async (group = 'asura') => {
 		},
 	};
 	const res1 = await fetch(
-		`https://manga-scrapper.p.rapidapi.com/webtoons?provider=${group}&page=1&limit=10`,
+		`https://manga-scrapper.p.rapidapi.com/webtoons/all?provider=${group}`,
 		options
 	);
 	const res2 = await fetch(
-		`https://manga-scrapper.p.rapidapi.com/webtoons?provider=${group}&page=2&limit=10`,
+		`https://manga-scrapper.p.rapidapi.com/webtoons/all?provider=${group}`,
 		options
 	);
 	const res3 = await fetch(
-		`https://manga-scrapper.p.rapidapi.com/webtoons?provider=${group}&page=3&limit=4`,
+		`https://manga-scrapper.p.rapidapi.com/webtoons/all?provider=${group}`,
 		options
 	);
 	const mangas1 = await res1.json();
@@ -83,9 +83,28 @@ const generateMangaItem = (
 	let desc = mDesc.replaceAll(/<br(?: \/)?>/g, '');
 	if (desc.length > 200) desc = desc.slice(0, 200) + '...';
 
+	const editedImgLink = mImg.includes('www.asurascans')
+		? mImg.replace('www.asurascans', 'asuratoon')
+		: mImg.includes('asurascans')
+		? mImg.replace('asurascans', 'asuratoon')
+		: mImg.includes('asura.gg')
+		? mImg.replace('asura.gg', 'asuratoon.com')
+		: mImg.includes('i3.wp.com/cosmicscans')
+		? mImg.replace('i3.wp.com/cosmicscans', 'cosmic-scans')
+		: mImg.includes('cosmicscans')
+		? mImg.replace('cosmicscans', 'cosmic-scans')
+		: mImg.includes('flamescans.org')
+		? mImg.replace('flamescans.org', 'flamecomics.com')
+		: mImg.includes('anigliscans')
+		? mImg.replace('.com', '.xyz')
+		: mImg.includes('luminousscans')
+		? mImg.replace('.com', '.net')
+		: mImg.includes('suryascans')
+		? mImg.replace('suryascans', 'suryacomics')
+		: mImg;
 	const divContainer = createDivEl('d-flex manga-item');
 	const aImg = createAEl(null, mLink);
-	const img = createImgEl('manga-img h-100', mImg, mTitle);
+	const img = createImgEl('manga-img h-100', editedImgLink, mTitle);
 	const divInfo = createDivEl('d-flex manga-info');
 	const aTitle = createAEl('manga-title', mLink);
 	const pDesc = createPElWithText('manga-desc', desc);

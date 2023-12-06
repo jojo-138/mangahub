@@ -4,8 +4,11 @@
 }
 
 #title {
-	text-align: center;
 	margin-top: 2rem;
+}
+
+.center {
+	text-align: center;
 }
 
 .chapter-nav {
