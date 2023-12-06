@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const dropdowns = document.getElementsByClassName('chapter-list');
 	const chapterImgs = document.getElementById('chapter-imgs');
+	const noChapterImgs = document.getElementById('no-chater-imgs');
 	const prevBtns = document.getElementsByClassName('prev');
 	const nextBtns = document.getElementsByClassName('next');
 	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
@@ -34,7 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.title = `MangaHub | ${data.fullTitle}`;
 		emptyParent(chapterImgs);
 		window.scrollTo(0, 0);
-		data.contentURL.forEach((img, i) => generateChapterImgs(img, i + 1, chapterImgs));
+		data.contentURL
+			? data.contentURL.forEach((img, i) => generateChapterImgs(img, i + 1, chapterImgs))
+			: noChapterImgsShown(chapterImgs, noChapterImgs);
 		Array.from(prevBtns).forEach(
 			(btn) =>
 				(btn.onclick = !data.chapterNav.prevSlug
@@ -50,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 
 	const onClickPrevNextBtns = (id) => {
+		chapterImgs.classList.remove('hidden');
+		noChapterImgs.classList.add('hidden');
 		chapterLink = `https://manga-scrapper.p.rapidapi.com/chapters/${id}?provider=${provider}&webtoon=${mangaId}`;
 		getChapterImgs(chapterLink);
 		changeUrlParams('chapterId', id);
@@ -101,19 +106,45 @@ const fetchMangaAPI = async (link) => {
 const generateChapterList = (dropdowns, mChapters, chapterId) => {
 	Array.from(dropdowns).forEach((dropdown) => {
 		mChapters.forEach((item) => {
-			const opt = document.createElement('option');
-			opt.value = item.slug;
-			opt.append(item.shortTitle);
-			dropdown.appendChild(opt);
+			if (item.contentURL) {
+				const opt = document.createElement('option');
+				opt.value = item.slug;
+				opt.append(item.shortTitle);
+				dropdown.appendChild(opt);
+			}
 		});
 		dropdown.value = chapterId;
 	});
 };
 
 const generateChapterImgs = (cImg, page, container) => {
-	const img = createImgEl('w-100', cImg, `page ${page}`);
+	const editedImgLink = cImg.includes('www.asurascans')
+		? cImg.replace('www.asurascans', 'asuratoon')
+		: cImg.includes('asurascans')
+		? cImg.replace('asurascans', 'asuratoon')
+		: cImg.includes('asura.gg')
+		? cImg.replace('asura.gg', 'asuratoon.com')
+		: cImg.includes('i3.wp.com/cosmicscans')
+		? cImg.replace('i3.wp.com/cosmicscans', 'cosmic-scans')
+		: cImg.includes('cosmicscans')
+		? cImg.replace('cosmicscans', 'cosmic-scans')
+		: cImg.includes('flamescans.org')
+		? cImg.replace('flamescans.org', 'flamecomics.com')
+		: cImg.includes('anigliscans')
+		? cImg.replace('.com', '.xyz')
+		: cImg.includes('luminousscans')
+		? cImg.replace('.com', '.net')
+		: cImg.includes('suryascans')
+		? cImg.replace('suryascans', 'suryacomics')
+		: cImg;
+	const img = createImgEl('w-100', editedImgLink, `page ${page}`);
 	container.appendChild(img);
 };
+
+const noChapterImgsShown = (chapterImgs, noChapterImgs) => {
+	chapterImgs.classList.add('hidden');
+	noChapterImgs.classList.remove('hidden');
+}
 
 // utils
 const createEl = (el) => document.createElement(el);

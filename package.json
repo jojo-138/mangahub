@@ -1,6 +1,6 @@
 {
   "name": "mangahub",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://jojo-138.github.io/mangahub/",
   "private": true,
   "description": "A place to read manga to your heart's content. For free.",
@@ -14,8 +14,8 @@
     "manhwa",
     "manhua"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Joana Mateo",
+  "license": "MIT",
   "browserslist": {
     "production": [
       ">0.2%",

@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const manga = await fetchMangaAPI('manga', mangaId, provider);
 		const chapters = await fetchMangaAPI('chapters', mangaId, provider);
 
-		document.title = `MangaHub | ${manga.shortTitle ?? 'Error'}`;
+		document.title = `MangaHub | ${manga.shortTitle || manga.title}`;
 
 		if (!manga) {
 			mangaError = true;
@@ -38,15 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
 				manga.synopsis
 			);
 			chapters.sort((a, b) => a.chapterNum - b.chapterNum);
-			chapters.forEach((chapter) =>
-				generateChapterList(
+			chapters.forEach((chapter) => {
+				chapter.contentURL && generateChapterList(
 					chapterTbl,
 					chapterUrl(mangaId, chapter.slug, provider),
 					chapter.chapterNum,
 					chapter.fullTitle,
 					chapter.updatedAt
 				)
-			);
+			});
 		}
 	};
 
@@ -138,9 +138,28 @@ const generateMangaDetails = (mTitle, mImg, mGenre = 'Uncategorized', mSummary) 
 	const img = document.getElementById('manga-img');
 	const genre = document.getElementById('genre');
 	const summary = document.getElementById('summary');
+	const editedImgLink = mImg.includes('www.asurascans')
+		? mImg.replace('www.asurascans', 'asuratoon')
+		: mImg.includes('asurascans')
+		? mImg.replace('asurascans', 'asuratoon')
+		: mImg.includes('asura.gg')
+		? mImg.replace('asura.gg', 'asuratoon.com')
+		: mImg.includes('i3.wp.com/cosmicscans')
+		? mImg.replace('i3.wp.com/cosmicscans', 'cosmic-scans')
+		: mImg.includes('cosmicscans')
+		? mImg.replace('cosmicscans', 'cosmic-scans')
+		: mImg.includes('flamescans.org')
+		? mImg.replace('flamescans.org', 'flamecomics.com')
+		: mImg.includes('anigliscans')
+		? mImg.replace('.com', '.xyz')
+		: mImg.includes('luminousscans')
+		? mImg.replace('.com', '.net')
+		: mImg.includes('suryascans')
+		? mImg.replace('suryascans', 'suryacomics')
+		: mImg;
 
 	title.textContent = mTitle;
-	img.src = mImg;
+	img.src = editedImgLink;
 	img.alt = mTitle;
 	img.onerror = () => {
 		img.onerror = '';

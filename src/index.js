@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const asuraContainer = document.getElementById('asura-container');
 	const cosmicContainer = document.getElementById('cosmic-container');
 	const flameContainer = document.getElementById('flame-container');
-	const realmContainer = document.getElementById('realm-container');
+	const anigliContainer = document.getElementById('anigli-container');
 	const luminousContainer = document.getElementById('luminous-container');
 	const suryaContainer = document.getElementById('surya-container');
 	const navSigninRegisterLink = document.getElementById('nav-signin-register-link');
@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			container: flameContainer,
 		},
 		{
-			name: 'realm',
-			container: realmContainer,
+			name: 'anigli',
+			container: anigliContainer,
 		},
 		{
 			name: 'luminous',
@@ -88,9 +88,29 @@ const fetchMangaAPI = async (group) => {
 };
 
 const generateMangaCard = (container, mLink, mImg, mTitle) => {
+	const editedImgLink = mImg.includes('www.asurascans')
+		? mImg.replace('www.asurascans', 'asuratoon')
+		: mImg.includes('asurascans')
+		? mImg.replace('asurascans', 'asuratoon')
+		: mImg.includes('asura.gg')
+		? mImg.replace('asura.gg', 'asuratoon.com')
+		: mImg.includes('i3.wp.com/cosmicscans')
+		? mImg.replace('i3.wp.com/cosmicscans', 'cosmic-scans')
+		: mImg.includes('cosmicscans')
+		? mImg.replace('cosmicscans', 'cosmic-scans')
+		: mImg.includes('flamescans.org')
+		? mImg.replace('flamescans.org', 'flamecomics.com')
+		: mImg.includes('anigliscans')
+		? mImg.replace('.com', '.xyz')
+		: mImg.includes('luminousscans')
+		? mImg.replace('.com', '.net')
+		: mImg.includes('suryascans')
+		? mImg.replace('suryascans', 'suryacomics')
+		: mImg;
+	console.log(editedImgLink)
 	const div = createDivEl('manga-card w-100');
 	const a = createAEl(null, mLink);
-	const img = createImgEl('card-img w-100 h-100', mImg, mTitle);
+	const img = createImgEl('card-img w-100 h-100', editedImgLink, mTitle);
 	const p = createPElWithText('card-title w-100', mTitle);
 
 	a.append(img, p);
