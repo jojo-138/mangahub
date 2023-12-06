@@ -138,7 +138,7 @@ const generateHistFromStorage = (container, input, btn) => {
 
 const getSearched = async (container, input) => {
 	const mangas = await fetchMangaAPI(input);
-		Array.isArray(mangas) && emptyParent(container);
+	Array.isArray(mangas) && emptyParent(container);
 	mangas.forEach((manga) =>
 		generateMangaItem(
 			container,
